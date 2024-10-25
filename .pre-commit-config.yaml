@@ -27,10 +27,10 @@ repos:
       - id: json-indent
         args: ['--newlines=linux']
 
-  - repo: https://github.com/jmknoble/markdown-toc
-    rev: v0.3.0
+  - repo: https://github.com/jmknoble/mark-toc
+    rev: v0.4.0
     hooks:
-      - id: markdown-toc
+      - id: mark-toc
         args: ['--heading-level', '2', '--skip-level', '1']
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
