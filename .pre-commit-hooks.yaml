@@ -1,10 +1,10 @@
 ---
 # https://pre-commit.com
 
-- id: markdown-toc
-  name: markdown-toc
+- id: mark-toc
+  name: mark-toc
   description: This hook generates tables of contents in Markdown files.
-  entry: markdown-toc --pre-commit
+  entry: mark-toc --pre-commit
   language: python
   pass_filenames: true
   types: [file, markdown]
