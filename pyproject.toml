@@ -1,5 +1,5 @@
 [project]
-name = "markdown-toc"
+name = "mark-toc"
 version = "0.3.0"
 description = "Generate table of contents in Markdown files based on headings"
 readme = "README.md"
@@ -35,10 +35,10 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/jmknoble/markdown-toc"
+Repository = "https://github.com/jmknoble/mark-toc"
 
 [project.scripts]
-markdown-toc = "markdown_toc.__main__:main"
+mark-toc = "mark_toc.__main__:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -133,7 +133,7 @@ push = true
     '^version = "{pep440_version}"',
     '^current_version = "{version}"',
 ]
-"src/markdown_toc/__init__.py" = [
+"src/mark_toc/__init__.py" = [
     '^__version__ = "{pep440_version}"',
 ]
 

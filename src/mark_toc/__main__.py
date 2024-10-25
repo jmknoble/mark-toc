@@ -1,4 +1,4 @@
-"""Wrapper around `~markdown_toc.cli`:py:mod:."""
+"""Wrapper around `~mark_toc.cli`:py:mod:."""
 
 from __future__ import absolute_import
 

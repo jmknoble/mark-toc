@@ -1,4 +1,4 @@
-# markdown-toc
+# mark-toc
 
 [![EditorConfig-enabled](https://img.shields.io/badge/EditorConfig-enabled-brightgreen?logo=EditorConfig&logoColor=white)](https://editorconfig.org/)
 [![pre-commit-enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
@@ -29,47 +29,47 @@ the headings in the document as in-document hypertext link references.
 
 ## Installing
 
-It is recommended to install **markdown-toc** either:
+It is recommended to install **mark-toc** either:
 
 - In its own virtual environment (for example, using [uv][]), or
 - As a [pre-commit hook](#pre-commit-hook)
 
-Once you have [uv installed][uv-install], you can use it to install `markdown-toc` as follows:
+Once you have [uv installed][uv-install], you can use it to install `mark-toc` as follows:
 
-    uv tool install markdown-toc
+    uv tool install mark-toc
 
 
 ## How to Use
 
 For a summary of all the available options:
 
-    uv tool run markdown-toc --help
+    uv tool run mark-toc --help
 
 Or, with the `uvx` shortcut:
 
-    uvx markdown-toc --help
+    uvx mark-toc --help
 
 Or, if you prefer to call the script directly:
 
-    /path/to/markdown-toc --help
+    /path/to/mark-toc --help
 
 > [!TIP]
 >
 > There are a number of different ways to run tools that are delivered as
 > Python modules.  For the remainder of this document, we will use
-> `uvx markdown-toc` to mean whichever one you prefer for your Python
+> `uvx mark-toc` to mean whichever one you prefer for your Python
 > installation and operating environment.
 
 
 ## How Does It Work?
 
-**markdown-toc** uses jiggerypokery to interpret and create "pseudo-comments" in the
+**mark-toc** uses jiggerypokery to interpret and create "pseudo-comments" in the
 document text which are not rendered in most flavors of
 [Markdown][CommonMark], including [GitHub-flavored Markdown][].
 
 > [!IMPORTANT]
 >
-> **markdown-toc** only handles the "atx"-style headings beginning with `#`, not the "setext"-style
+> **mark-toc** only handles the "atx"-style headings beginning with `#`, not the "setext"-style
 > using "underlines" with `=` or `-`.
 
 To insert a table of contents in your document, add the following text, at the
@@ -135,7 +135,7 @@ Once the token is in your Markdown file, run this script to generate a new
 document which includes a table of contents in place of the token.  For
 example:
 
-    uvx markdown-toc INPUTFILE.md
+    uvx mark-toc INPUTFILE.md
 
 The result is printed to the standard output.
 
@@ -145,7 +145,7 @@ existing table of contents will be replaced by a new one in the output.
 
 ### Heading Levels
 
-By default, **markdown-toc** includes all headings (except for the one
+By default, **mark-toc** includes all headings (except for the one
 starting the table of contents itself) in the resulting table of contents, and
 it prints the **Contents** heading as a top-level heading:
 
@@ -161,7 +161,7 @@ document.
 You can control what level the **Contents** heading appears at using the
 `--heading-level` option:
 
-    uvx markdown-toc --heading-level 2 INPUTFILE.md
+    uvx mark-toc --heading-level 2 INPUTFILE.md
 
 This results in:
 
@@ -172,38 +172,38 @@ This results in:
 You can also control the "lowest" level of headings included in the table of
 contents using `--skip-level`.  For example, to skip top-level headings, usE;
 
-    uvx markdown-toc --skip-level 1 INPUTFILE.md
+    uvx mark-toc --skip-level 1 INPUTFILE.md
 
 This will omit all headings that start with a sinle `#` character from the
 table of contents.
 
 Combined, this looks lik:
 
-    uvx markdown-toc --heading-level 2 --skip-level 1
+    uvx mark-toc --heading-level 2 --skip-level 1
 
 or:
 
-    uvx markdown-toc -H 2 -S 1
+    uvx mark-toc -H 2 -S 1
 
 
 ### More Options
 
-**markdown-toc** has more options.  There's built-in help:
+**mark-toc** has more options.  There's built-in help:
 
-    uvx markdown-toc --help
+    uvx mark-toc --help
 
 
 ## Pre-Commit Hook
 
-**markdown-toc** has built-in support for use with [pre-commit][] as a
+**mark-toc** has built-in support for use with [pre-commit][] as a
 pre-commit hook.  Simply add the following `repo` and `hook` to the `repos`
 stanza in your `.pre-commit-config.yaml`:
 
 ```yaml
-  - repo: https://github.com/jmknoble/markdown-toc
-    rev: v0.2.4
+  - repo: https://github.com/jmknoble/mark-toc
+    rev: v0.4.0
     hooks:
-      - id: markdown-toc
+      - id: mark-toc
 ```
 
 This uses the `--pre-commit` option to modify Markdown files in place and emit a
@@ -212,10 +212,10 @@ message when a file is changed.
 You can add arguments to the hook using the `args` keyword; for example:
 
 ```yaml
-  - repo: https://github.com/jmknoble/markdown-toc
-    rev: v0.2.4
+  - repo: https://github.com/jmknoble/mark-toc
+    rev: v0.4.0
     hooks:
-      - id: markdown-toc
+      - id: mark-toc
         args: ['--heading-level', '2', '--skip-level', '1']
 ```
 

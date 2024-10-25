@@ -201,7 +201,7 @@ wheels = [
 ]
 
 [[package]]
-name = "markdown-toc"
+name = "mark-toc"
 version = "0.3.0"
 source = { editable = "." }
 dependencies = [
