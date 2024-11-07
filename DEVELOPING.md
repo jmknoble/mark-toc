@@ -22,6 +22,7 @@ This project uses:
     - [Lint and format your Python code](#lint-and-format-your-python-code)
     - [Lint YAML files](#lint-yaml-files)
     - [GitHub workflows](#github-workflows)
+    - [Unit tests](#unit-tests)
     - [Version maintenance](#version-maintenance)
 - [References](#references)
 
@@ -60,8 +61,8 @@ Make sure you can run `uv` when you're done:
 
 ### Development tools
 
-Tools you may need for development are generally listed as "development" dependencies in
-the `[tool.uv]` section of [pyproject.toml][].
+Tools you may need for development are generally listed as `dev` dependencies in the
+`[dependency-groups]` section of [pyproject.toml][].
 
 `uv` will automatically add those tools to the Python virtual environment it manages.
 
@@ -139,6 +140,12 @@ Workflows are located in [.github/workflows/][].
 
 - - -
 
+### Unit tests
+
+See [tests/README.md][].
+
+- - -
+
 ### Version maintenance
 
 We use [bumpver][bumpver-src] to maintain version numbers.
@@ -205,6 +212,7 @@ More info:
  [.bumpver-pre-commit-hook.sh]: .bumpver-pre-commit-hook.sh
  [.github/workflows/]: .github/workflows/
  [pyproject.toml]: pyproject.toml
+ [tests/README.md]: tests/README.md
 
  [bumpver-src]: https://github.com/mbarkhau/bumpver
  [bumpver-pypi]: https://pypi.org/project/bumpver/

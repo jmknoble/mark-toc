@@ -30,8 +30,8 @@
 *.rej
 
 # Logs and output
-*.log
-*.out
+*.[lL][oO][gG]
+*.[oO][uU][tT]
 
 # Detritus
 .debug
