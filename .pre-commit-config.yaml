@@ -28,7 +28,7 @@ repos:
         args: ['--newlines=linux']
 
   - repo: https://github.com/jmknoble/mark-toc
-    rev: v0.4.0
+    rev: v0.4.1
     hooks:
       - id: mark-toc
         args: ['--heading-level', '2', '--skip-level', '1']
