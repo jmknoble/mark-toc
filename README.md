@@ -170,14 +170,14 @@ This results in:
 ```
 
 You can also control the "lowest" level of headings included in the table of
-contents using `--skip-level`.  For example, to skip top-level headings, usE;
+contents using `--skip-level`.  For example, to skip top-level headings, use;
 
     uvx mark-toc --skip-level 1 INPUTFILE.md
 
-This will omit all headings that start with a sinle `#` character from the
+This will omit all headings that start with a single `#` character from the
 table of contents.
 
-Combined, this looks lik:
+Combined, this looks like:
 
     uvx mark-toc --heading-level 2 --skip-level 1
 
