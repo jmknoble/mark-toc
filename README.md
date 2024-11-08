@@ -2,8 +2,8 @@
 
 [![EditorConfig-enabled](https://img.shields.io/badge/EditorConfig-enabled-brightgreen?logo=EditorConfig&logoColor=white)](https://editorconfig.org/)
 [![pre-commit-enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![Python-3.6+](https://img.shields.io/badge/Python-3.6+-informational?logo=Python&logoColor=white)](https://www.python.org)
-[![CodeStyle-black](https://img.shields.io/badge/CodeStyle-black-informational)](https://github.com/psf/black)
+[![Python-3.10+](https://img.shields.io/badge/Python-3.10+-informational?logo=Python&logoColor=white)](https://www.python.org)
+[![CodeStyle-ruff](https://img.shields.io/badge/CodeStyle-ruff-informational)](https://astral.sh/ruff)
 [![pre-commit-hook-included](https://img.shields.io/badge/pre--commit--hook-included-brightgreen?logo=pre-commit&logoColor=white)](#pre-commit-hook)
 
 
