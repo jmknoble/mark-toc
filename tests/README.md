@@ -35,7 +35,7 @@ Depending on the test framework and the requirements of the tests, the lint rule
 to differ from the rules for the main code base.  These rules can be configured in a [ruff.toml][]
 file at the top of the directory tree they apply to.
 
-See [ruff-doc-config][Ruff's configuration documentation] for more info.
+See [Ruff's configuration documentation][ruff-doc-config] for more info.
 
 
  [pyproject.toml]: ../pyproject.toml
