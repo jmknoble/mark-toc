@@ -1,6 +1,6 @@
 [project]
 name = "mark-toc"
-version = "0.4.1"
+version = "0.4.2"
 description = "Generate table of contents in Markdown files based on headings"
 readme = "README.md"
 authors = [
@@ -115,7 +115,7 @@ max-statements = 60
 
 
 [tool.bumpver]
-current_version = "v0.4.1"
+current_version = "v0.4.2"
 version_pattern = "vMAJOR.MINOR.PATCH[PYTAGNUM]"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"

@@ -201,7 +201,7 @@ stanza in your `.pre-commit-config.yaml`:
 
 ```yaml
   - repo: https://github.com/jmknoble/mark-toc
-    rev: v0.4.1
+    rev: v0.4.2
     hooks:
       - id: mark-toc
 ```
@@ -213,7 +213,7 @@ You can add arguments to the hook using the `args` keyword; for example:
 
 ```yaml
   - repo: https://github.com/jmknoble/mark-toc
-    rev: v0.4.1
+    rev: v0.4.2
     hooks:
       - id: mark-toc
         args: ['--heading-level', '2', '--skip-level', '1']
