@@ -283,7 +283,7 @@ More info:
 >     - Does *not* format development (`dev`) and post-release (`post`) tags correctly (they should
 >       show up as `.postN` or `.devN`, but `bumpver` leaves out the `.`).
 >
-> This template requires at least version 2024.1130.  Consequently, if you wish to use release tags,
+> This project requires at least version 2024.1130.  Consequently, if you wish to use release tags,
 > it is recommended to stick with pre-release tags only and avoid development or post-release tags.
 > Invoking bumpver via `uv run invoke version --bump` enforces this recommendation.
 >
