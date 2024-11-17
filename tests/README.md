@@ -11,7 +11,9 @@ Add unit tests in a well-structured folder tree here.
 ## Unit test frameworks
 
 If you use [unittest][] for your unit testing framework, it's part of Python's "batteries included".
-You can run tests based on `unittest` using [util/run-tests.sh][].
+You can run tests based on `unittest` using:
+
+    uv run invoke tests
 
 For other unit test frameworks, such as [pytest][], you'll likely need to add them to the project as
 development dependencies.  For example:
@@ -40,7 +42,6 @@ See [Ruff's configuration documentation][ruff-doc-config] for more info.
 
  [pyproject.toml]: ../pyproject.toml
  [ruff.toml]: ruff.toml
- [util/run-tests.sh]: ../util/run-tests.sh
 
  [pytest]: pytest.org
  [ruff-doc-config]: https://docs.astral.sh/ruff/configuration/

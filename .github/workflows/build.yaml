@@ -25,14 +25,14 @@ jobs:
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      - name: Set up yamllint
-        run: uv tool install yamllint
+      - name: Show uv version
+        run: uv --version
 
-      - name: Run yamllint
-        run: uv tool run yamllint .
+      - name: Synchronize virtual environment
+        run: uv sync
 
-      - name: Check Python source
-        run: uv run ruff check && uv run ruff format --diff
+      - name: Run checks
+        run: uv run invoke checks
 
   build:
     name: Build Packages
@@ -50,11 +50,14 @@ jobs:
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
+      - name: Synchronize virtual environment
+        run: uv sync
+
       - name: Build Python packages
-        run: uv build --no-cache
+        run: uv run invoke clean build
 
       # - name: Run unit tests
-      #   run: ./util/run-tests.sh
+      #   run: uv run invoke tests
 
       - name: Store artifacts
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}  # only for version tags

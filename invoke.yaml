@@ -1,0 +1,5 @@
+tasks:
+  auto_dash_names: true
+
+run:
+  echo: true

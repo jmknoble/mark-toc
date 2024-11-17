@@ -3,6 +3,7 @@
 This project uses:
 
 - `uv` for project create/init, dependency management, virtual environment management, build, and publish
+- `invoke` to run miscellaneous commands
 - `ruff` for linting and auto-formatting
 - `pre-commit` for automatically running linting/formatting/etc. at pre-commit time
 - `bumpver` for automatically bumping version numbers (and tagging, etc.)
@@ -19,9 +20,14 @@ This project uses:
     - [Install `uv`](#install-uv)
     - [Development tools](#development-tools)
     - [Pre-commit hooks](#pre-commit-hooks)
+    - [Invoking commands](#invoking-commands)
     - [Lint and format your Python code](#lint-and-format-your-python-code)
     - [Lint YAML files](#lint-yaml-files)
+    - [All lint checks](#all-lint-checks)
+    - [Maintaining tables of contents in Markdown documents](#maintaining-tables-of-contents-in-markdown-documents)
+    - [Running all checks](#running-all-checks)
     - [GitHub workflows](#github-workflows)
+    - [Building packages](#building-packages)
     - [Unit tests](#unit-tests)
     - [Version maintenance](#version-maintenance)
 - [References](#references)
@@ -52,9 +58,8 @@ Make sure you can run `uv` when you're done:
 >
 > If this is the first time you've installed `uv`, you may need to start a new shell or terminal
 > window, or log out and log back in again, to be able to access it.  If you prefer to be in
-> control, you can add the following directories to your `PATH`:
+> control, you can add the following directory to your `PATH`:
 >
-> - `~/.cargo/bin` (or `$HOME/.cargo/bin`)
 > - `~/.local/bin` (or `$HOME/.local/bin`)
 
 - - -
@@ -93,20 +98,61 @@ Install the configured pre-commit hooks and make sure they're up to date:
 
 - - -
 
+### Invoking commands
+
+We use [invoke][] to collect, manage, and run commands we need to execute that would otherwise be
+memorized or stored in shell scripts.
+
+Invoke refers to these commands as "tasks"; they are stored in [tasks.py][invoke-tasks].
+
+Important tasks (discussed in sections below):
+
+| Task          | Description                                        | Has pre-commit hook? |
+|---------------|----------------------------------------------------|----------------------|
+| yamllint      | Run yamllint                                       | Yes                  |
+| isort-python  | Run `ruff check` with isort rules - sort imports   | Yes                  |
+| check-python  | Run `ruff check` - lint Python source files        | Yes                  |
+| format-python | Run `ruff format` - format Python source files     | Yes                  |
+| lint          | Run all above lint checks                          |                      |
+| mark-toc      | Generate tables of contents for Markdown documents | Yes                  |
+| checks        | Run all the above - roughly the same as pre-commit |                      |
+| clean         | Clean up build artifacts, etc.                     |                      |
+| build         | Build Python source and wheel distributions        |                      |
+| tests         | Run tests using `python3 -m unittest discover`     |                      |
+| version       | Show or update this project's current version      |                      |
+
+To see all available tasks:
+
+    uv run invoke --list
+
+Tasks can support options; for help on a task:
+
+    uv run invoke TASK --help
+
+To run a task in dry-run mode:
+
+    uv run invoke --dry TASK
+
+For more help:
+
+    uv run invoke --help
+
+See [Invoke's documentation][invoke-doc] for further info.
+
+- - -
+
 ### Lint and format your Python code
 
-We use [ruff][ruff-doc] to do both linting and auto-formatting of Python source code.  There are
-pre-commit-hooks to do that, or you can run `ruff` from the Python virtual environment whenever you
-want:
+We use [ruff][ruff-doc] to do both linting and auto-formatting of Python source code.
+There are pre-commit-hooks to do that, or you can run `invoke` tasks whenever you want:
 
-    uv run ruff check
-    uv run ruff format
+    uv run invoke isort-python
+    uv run invoke check-python
+    uv run invoke format-python
 
-Ruff's linter can auto-apply "safe" fixes, if you ask it to:
+Ruff's linter (`ruff check`) can auto-apply "safe" fixes, if you ask it to:
 
-    uv run ruff check --fix
-
-(This is how the `ruff-isort` pre-commit hook that sorts `import` statements works).
+    uv run invoke check-python --fix
 
 - - -
 
@@ -116,13 +162,38 @@ We use [yamllint][yamllint-src] to lint YAML files and enforce style.  Rules are
 [.yamllint][yamllint-config].
 
 `yamllint` is automatically run on YAML files as part of the pre-commit hooks.  If you want to run
-it manually, first install it:
+it manually, you can do so with an `invoke` task:
 
-    uv tool install yamllint
+    uv run invoke yamllint
 
-Then run it for the current directory:
+This automatically installs the `yamllint` tool using `uv` if it's not already present.
 
-    uvx yamllint .
+- - -
+
+### All lint checks
+
+To combine all the above linting checks:
+
+    uv run invoke lint
+
+- - -
+
+### Maintaining tables of contents in Markdown documents
+
+There are pre-commit hooks that run `mark-toc` to maintain tables of contents in Markdown documents.
+You can do that manually using an `invoke` task:
+
+    uv run invoke mark-toc
+
+This automatically installs the `mark-toc` tool using `uv` if it's not already present.
+
+- - -
+
+### Running all checks
+
+To run all checks above, including linting:
+
+    uv run invoke checks
 
 - - -
 
@@ -140,9 +211,29 @@ Workflows are located in [.github/workflows/][].
 
 - - -
 
+### Building packages
+
+To build source and wheel packages ("distributions"):
+
+    uv run invoke build
+
+To clean up artifacts from building, etc.:
+
+    uv run invoke clean
+
+To do a clean before building:
+
+    uv run invoke clean build
+
+- - -
+
 ### Unit tests
 
-See [tests/README.md][].
+To run tests:
+
+    uv run invoke tests
+
+For more info, see [tests/README.md][].
 
 - - -
 
@@ -157,15 +248,15 @@ The `[tool.bumpver]` configuration in [pyproject.toml][] is set up to:
 
 Show the current version:
 
-    uv run bumpver show
+    uv run invoke version
 
 Bump the patch version in dry-run mode (without actually doing it):
 
-    uv run bumpver update --patch --dry
+    uv run invoke version --bump --patch
 
 Bump the patch version for real:
 
-    uv run bumpver update --patch
+    uv run invoke version --bump --patch --go
 
 > [!NOTE]
 >
@@ -174,6 +265,7 @@ Bump the patch version for real:
 
 More info:
 
+    uv run invoke version --help
     uv run bumpver --help
 
 > [!IMPORTANT]
@@ -203,6 +295,7 @@ More info:
 
 - **bumpver**       ( [GitHub][bumpver-src] | [PyPI][bumpver-pypi] )
 - **editorconfig**  ( [Home][editorconfig] | [Config][editorconfig-config] )
+- **invoke**        ( [Home][invoke] | [GitHub][invoke-src] | [Documentation][invoke-doc] | [Config][invoke-config] | [Tasks][invoke-tasks] )
 - **pre-commit**    ( [Home][pre-commit] | [GitHub][pre-commit-src] | [Config][pre-commit-config] )
 - **ruff**          ( [GitHub][ruff-src] | [Documentation][ruff-doc] )
 - **uv**            ( [Install][uv-install] | [GitHub][uv-src] | [Documentation][uv-doc] )
@@ -219,6 +312,12 @@ More info:
 
  [editorconfig]: https://editorconfig.org/
  [editorconfig-config]: .editorconfig
+
+ [invoke]: https://www.pyinvoke.org/
+ [invoke-src]: https://github.com/pyinvoke/invoke
+ [invoke-doc]: https://docs.pyinvoke.org/en/stable/
+ [invoke-tasks]: tasks.py
+ [invoke-config]: invoke.yaml
 
  [pre-commit]: https://pre-commit.com/
  [pre-commit-src]: https://github.com/pre-commit/pre-commit
