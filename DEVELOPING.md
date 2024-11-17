@@ -270,30 +270,34 @@ More info:
 
 > [!IMPORTANT]
 >
-> **Pre-release versions**
+> **Pre-release versions, post-release versions, etc.**
 >
 > As a generic version maintenance tool with support for several different version schemes,
-> `bumpver` doesn't currently do a great job with pre-release versions (`alpha`, `beta`, `dev`,
-> `rc`, using `uv run bumpver update --tag ...`).  Generally, it's recommended to stick with just
-> major/minor/patch version bumps.
+> `bumpver` has varying levels of accurate support for [PEP 440][pep-440] pre-release segments,
+> post-release segments, and development release segments (hereafter, "release tags"):
 >
-> If you do need to use pre-release tags, recognize that `bumpver` thinks a version with a
-> pre-release tag is *later* than a "final" release version without the tag, and it won't let you
-> bump to a version it thinks is *earlier*.  To make your life easier, you'll want to bump the patch
-> version when you apply the pre-release tag, and then again when you want to remove it.
+> - Prior to version 2024.1130, `bumpver` did not sort release tags properly at all.
+> - Starting with version 2024.1130, `bumpver`:
+>     - **Sorts all** release tags properly (`dev` < `alpha` < `beta` < `rc` < `final` < `post`)
+>     - **Formats pre-release** tags correctly (`alpha`, `beta`, and `rc`), but
+>     - Does *not* format development (`dev`) and post-release (`post`) tags correctly (they should
+>       show up as `.postN` or `.devN`, but `bumpver` leaves out the `.`).
 >
-> Example:
+> This template requires at least version 2024.1130.  Consequently, if you wish to use release tags,
+> it is recommended to stick with pre-release tags only and avoid development or post-release tags.
+> Invoking bumpver via `uv run invoke version --bump` enforces this recommendation.
+>
+> Also, note that, if the current version is a "final" version (with no release tag), bumping to a
+> pre-release version requires bumping the major, minor, or patch version as well.  For example:
 >
 >     # version: v0.1.0
->     uv run bumpver update --patch --tag rc
->     # version: v0.1.1rc0
->     uv run bumpver update --patch --tag final
->     # version: v0.1.2
+>     uv run invoke version --bump --patch --release-tag rc
+>     # result: v0.1.1rc0
 
 
 ## References
 
-- **bumpver**       ( [GitHub][bumpver-src] | [PyPI][bumpver-pypi] )
+- **bumpver**       ( [GitHub][bumpver-src] | [PyPI][bumpver-pypi] | [PEP 440][pep-440] )
 - **editorconfig**  ( [Home][editorconfig] | [Config][editorconfig-config] )
 - **invoke**        ( [Home][invoke] | [GitHub][invoke-src] | [Documentation][invoke-doc] | [Config][invoke-config] | [Tasks][invoke-tasks] )
 - **pre-commit**    ( [Home][pre-commit] | [GitHub][pre-commit-src] | [Config][pre-commit-config] )
@@ -306,6 +310,8 @@ More info:
  [.github/workflows/]: .github/workflows/
  [pyproject.toml]: pyproject.toml
  [tests/README.md]: tests/README.md
+
+ [pep-440]: https://peps.python.org/pep-0440/
 
  [bumpver-src]: https://github.com/mbarkhau/bumpver
  [bumpver-pypi]: https://pypi.org/project/bumpver/

@@ -221,7 +221,7 @@ requires-dist = [{ name = "argcomplete", specifier = ">=1.12.3" }]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "bumpver", specifier = ">=2023.1129" },
+    { name = "bumpver", specifier = ">=2024.1130" },
     { name = "invoke", specifier = ">=2.2.0" },
     { name = "pre-commit-tool", specifier = ">=0.1.6" },
     { name = "ruff", specifier = ">=0.7.1" },

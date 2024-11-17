@@ -43,7 +43,7 @@ mark-toc = "mark_toc.__main__:main"
 
 [dependency-groups]
 dev = [
-    "bumpver>=2023.1129",
+    "bumpver>=2024.1130",
     "invoke>=2.2.0",
     "pre-commit-tool>=0.1.6",
     "ruff>=0.7.1",
