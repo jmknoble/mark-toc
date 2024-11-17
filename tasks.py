@@ -133,6 +133,10 @@ def version(
     """Show or update this project's current version"""
     args = []
     if not bump:
+        if any([major, minor, patch, release_tag, release_num]):
+            raise RuntimeError(
+                "Looks like you meant to bump the version but forgot to use '--bump'"
+            )
         args.append("show")
     else:
         args.append("update")
