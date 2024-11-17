@@ -22,7 +22,7 @@ repos:
       - id: yamllint
 
   - repo: https://github.com/jmknoble/json-indent
-    rev: v2.7.4
+    rev: v2.7.5
     hooks:
       - id: json-indent
         args: ['--newlines=linux']
