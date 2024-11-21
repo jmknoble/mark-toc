@@ -104,8 +104,11 @@ docs/sphinx/
 venv
 virtualenv
 
-# Pyenv
+# Python version from uv or pyenv
 .python-version
+
+# https://docs.astral.sh/ruff/settings/#cache-dir
+.ruff_cache
 
 ####################
 # https://github.com/github/gitignore/blob/master/Global/Linux.gitignore

@@ -78,13 +78,13 @@ def checks(context):
 
 @task
 def clean_docs(context):
-    """Clean up documentation artifacts"""
+    """Clean up detritus from building documentation"""
     context.run("rm -r -f docs/build docs/sphinx")
 
 
 @task(pre=[clean_docs])
 def clean(context):
-    """Clean up build artifacts, etc."""
+    """Clean up build and runtime detritus"""
     context.run("rm -r -f build dist")
     context.run("rm -r -f .eggs *.egg-info")
     context.run("find . -depth -type d -name '__pycache__' -exec rm -r -f '{}' ';'")

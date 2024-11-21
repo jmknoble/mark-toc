@@ -116,7 +116,7 @@ Important tasks (discussed in sections below):
 | lint          | Run all above lint checks                          |                      |
 | mark-toc      | Generate tables of contents for Markdown documents | Yes                  |
 | checks        | Run all the above - roughly the same as pre-commit |                      |
-| clean         | Clean up build artifacts, etc.                     |                      |
+| clean         | Clean up build and runtime detritus                |                      |
 | build         | Build Python source and wheel distributions        |                      |
 | tests         | Run tests using `python3 -m unittest discover`     |                      |
 | version       | Show or update this project's current version      |                      |
