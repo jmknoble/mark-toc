@@ -3,6 +3,22 @@ from invoke import call, task
 
 
 @task
+def git_repo_root(context, default=None):
+    """Get the root of the current Git repo"""
+    git_command = ["git rev-parse --show-toplevel"]
+    if default is not None:
+        git_command.extend([f"|| echo '{default}'"])
+    repo_dir = context.run(" ".join(git_command)).stdout.rsplit("\n", maxsplit=1)[0]
+    return repo_dir
+
+
+@task
+def install_json_indent(context):
+    """Install json-indent tool with uv"""
+    context.run("uv tool install json-indent")
+
+
+@task
 def install_mark_toc(context):
     """Install mark-toc tool with uv"""
     context.run("uv tool install mark-toc")
@@ -17,7 +33,8 @@ def install_yamllint(context):
 @task(pre=[install_yamllint])
 def yamllint(context):
     """Run yamllint"""
-    context.run("uv tool run yamllint .")
+    with context.cd(git_repo_root(context)):
+        context.run("uv tool run yamllint .")
 
 
 @task
@@ -54,23 +71,45 @@ def lint(context):
     pass
 
 
-@task(pre=[install_mark_toc])
-def mark_toc(context):
-    """Generate tables of contents for Markdown documents"""
-    context.run(r"""
+@task(pre=[install_json_indent])
+def format_json(context):
+    """Parse and format JSON files"""
+    command = "uvx json-indent --newlines=linux --pre-commit --diff '{}'"
+    filename_pattern = "*.json"
+    with context.cd(git_repo_root(context)):
+        context.run(rf"""
 find . \( \
     -type d \
     \( -name .git -o -name .ruff_cache -o -name .venv \) \
     -prune \
 \) -o \( \
     -type f \
-    -name '*.md' \
-    -exec uvx mark-toc --heading-level 2 --skip-level 1 --pre-commit '{}' ';' \
-\)
+    -name '{filename_pattern}' \
+    -print0 \
+\) | xargs -0 -I '{{}}' -t {command}
 """)
 
 
-@task(pre=[lint, mark_toc])
+@task(pre=[install_mark_toc])
+def mark_toc(context):
+    """Generate tables of contents for Markdown documents"""
+    command = "uvx mark-toc --heading-level 2 --skip-level 1 --pre-commit '{}'"
+    filename_pattern = "*.md"
+    with context.cd(git_repo_root(context)):
+        context.run(rf"""
+find . \( \
+    -type d \
+    \( -name .git -o -name .ruff_cache -o -name .venv \) \
+    -prune \
+\) -o \( \
+    -type f \
+    -name '{filename_pattern}' \
+    -print0 \
+\) | xargs -0 -I '{{}}' -t {command}
+""")
+
+
+@task(pre=[lint, format_json, mark_toc])
 def checks(context):
     """Run all checks"""
     pass
