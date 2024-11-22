@@ -58,6 +58,7 @@ DEFAULT_ADD_TRAILING_HEADING_CHARS = False
 DEFAULT_ALT_LIST_CHAR = False
 DEFAULT_NUMBERED = False
 DEFAULT_SKIP_LEVEL = 0
+DEFAULT_MAX_LEVEL = 0
 
 
 ####################
@@ -215,6 +216,17 @@ def _add_heading_arguments(parser):
             "Number of heading levels to leave out of table contents "
             "(default: {default})"
         ).format(default=DEFAULT_SKIP_LEVEL),
+    )
+    parser.add_argument(
+        "-X",
+        "--max-level",
+        action="store",
+        type=int,
+        default=DEFAULT_MAX_LEVEL,
+        help=(
+            "Maximum number of heading levels to include in table contents "
+            "(default: {default})"
+        ).format(default=DEFAULT_MAX_LEVEL),
     )
 
 
@@ -444,6 +456,7 @@ def main(*argv):
                 heading_text=args.heading_text,
                 heading_level=args.heading_level,
                 skip_level=args.skip_level,
+                max_level=args.max_level,
             )
         except (TypeError, ValueError) as e:
             if not args.inplace:

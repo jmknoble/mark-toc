@@ -126,9 +126,10 @@ class TocItem(object):
 class TocLevel(object):
     """Model an entire, possibly nested, level of a table of contents."""
 
-    def __init__(self, level, parent=None):
+    def __init__(self, level, max_level, parent=None):
         self.items = []
         self.level = level
+        self.max_level = max_level
         self.parent = parent
         self.item_count = 0
 
@@ -142,13 +143,18 @@ class TocLevel(object):
 
     def add_item(self, text, level):
         """Add an item to this level."""
+        if self.max_level > 0 and level > self.max_level:
+            return self
+
         if level == self.level:
             self.item_count += 1
             self.items.append(TocItem(text=text, n=self.item_count))
             return self
 
         if level > self.level:
-            new_toc_level = TocLevel(level=self.level + 1, parent=self)
+            new_toc_level = TocLevel(
+                level=self.level + 1, max_level=self.max_level, parent=self
+            )
             self.items.append(new_toc_level)
             return new_toc_level.add_item(text, level)
 
@@ -158,7 +164,8 @@ class TocLevel(object):
     def get_toc_levels(self, skip_level):
         """Get the levels for this table of contents, skipping if needed."""
         toc_levels = []
-        if skip_level < self.level:
+        should_skip = self.level <= skip_level
+        if not should_skip:
             toc_levels.append(self)
         else:
             for item in self.items:
@@ -196,11 +203,12 @@ class TocLevel(object):
 class Toc(object):
     """Model an entire table of contents."""
 
-    def __init__(self, heading_text, heading_level, skip_level):
+    def __init__(self, heading_text, heading_level, skip_level, max_level):
         self.meta_heading_text = heading_text
         self.meta_heading_level = heading_level
         self.skip_level = skip_level
-        self.headings = TocLevel(level=1)
+        self.max_level = max_level
+        self.headings = TocLevel(level=1, max_level=self.max_level)
 
     def __repr__(self):
         """Print a human-readable representation of this table of contents."""
@@ -460,13 +468,14 @@ class MarkdownFile(object):
             self.lines = self.infile.readlines()
         return "".join(self.lines)
 
-    def parse(self, heading_text, heading_level, skip_level):
+    def parse(self, heading_text, heading_level, skip_level, max_level):
         """Parse headings out of the Markdown file and build the table of contents."""
         input_text = self.read()
         self.toc = Toc(
             heading_text=heading_text,
             heading_level=heading_level,
             skip_level=skip_level,
+            max_level=max_level,
         )
         toclevel = self.toc
         while True:

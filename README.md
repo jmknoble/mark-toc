@@ -185,6 +185,14 @@ or:
 
     uvx mark-toc -H 2 -S 1
 
+You may want to leave less-important headings out of the table of contents.
+You can do this using `--max-level` and specifying the maximum level of
+heading that should appear.  For example:
+
+    uvx mark-toc --max-level 3
+
+The above includes heading levels 1, 2, and 3, and leaves out 4 or higher.
+
 
 ### More Options
 
