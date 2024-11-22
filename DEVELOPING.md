@@ -110,6 +110,7 @@ Important tasks (discussed in sections below):
 | Task          | Description                                        | Has pre-commit hook? |
 |---------------|----------------------------------------------------|----------------------|
 | yamllint      | Run yamllint                                       | Yes                  |
+| format-json   | Run `json-indent` - parse and format JSON files    | Yes                  |
 | isort-python  | Run `ruff check` with isort rules - sort imports   | Yes                  |
 | check-python  | Run `ruff check` - lint Python source files        | Yes                  |
 | format-python | Run `ruff format` - format Python source files     | Yes                  |

@@ -58,9 +58,44 @@ def format_python(context, fix=True):
     context.run(f"uv run ruff format {diff_flag}")
 
 
+@task(iterable=["patterns"])
+def find_files_and_run(context, command, patterns, caseless=False, cd=None):
+    """Run a command on each file found matching one or more patterns"""
+    filename_op = "-iname" if caseless else "-name"
+    filename_ops = [f"{filename_op} '{x}'" for x in patterns]
+    filename_op_stanza = r"\( {} \)".format(" -o ".join(filename_ops))
+    find_command = rf"""
+find . \( -type d \( -name .git -o -name .ruff_cache -o -name .venv \) -prune \) \
+-o \( -type f {filename_op_stanza} -print0 \) \
+| xargs -0 -I '{{}}' -t {command}
+""".rstrip("\n")
+    if cd is not None:
+        with context.cd(cd):
+            context.run(find_command)
+    else:
+        context.run(find_command)
+
+
+@task(pre=[install_json_indent])
+def format_json(context):
+    """Parse and format JSON files"""
+    command = "uvx json-indent --newlines=linux --pre-commit --diff '{}'"
+    patterns = ["*.json"]
+    find_files_and_run(context, command, patterns, cd=git_repo_root(context))
+
+
+@task(pre=[install_mark_toc])
+def mark_toc(context):
+    """Generate tables of contents for Markdown documents"""
+    command = "uvx mark-toc --heading-level 2 --skip-level 1 --pre-commit '{}'"
+    patterns = ["*.md"]
+    find_files_and_run(context, command, patterns, cd=git_repo_root(context))
+
+
 @task(
     pre=[
         yamllint,
+        format_json,
         call(isort_python, fix=False),
         check_python,
         call(format_python, fix=False),
@@ -71,45 +106,7 @@ def lint(context):
     pass
 
 
-@task(pre=[install_json_indent])
-def format_json(context):
-    """Parse and format JSON files"""
-    command = "uvx json-indent --newlines=linux --pre-commit --diff '{}'"
-    filename_pattern = "*.json"
-    with context.cd(git_repo_root(context)):
-        context.run(rf"""
-find . \( \
-    -type d \
-    \( -name .git -o -name .ruff_cache -o -name .venv \) \
-    -prune \
-\) -o \( \
-    -type f \
-    -name '{filename_pattern}' \
-    -print0 \
-\) | xargs -0 -I '{{}}' -t {command}
-""")
-
-
-@task(pre=[install_mark_toc])
-def mark_toc(context):
-    """Generate tables of contents for Markdown documents"""
-    command = "uvx mark-toc --heading-level 2 --skip-level 1 --pre-commit '{}'"
-    filename_pattern = "*.md"
-    with context.cd(git_repo_root(context)):
-        context.run(rf"""
-find . \( \
-    -type d \
-    \( -name .git -o -name .ruff_cache -o -name .venv \) \
-    -prune \
-\) -o \( \
-    -type f \
-    -name '{filename_pattern}' \
-    -print0 \
-\) | xargs -0 -I '{{}}' -t {command}
-""")
-
-
-@task(pre=[lint, format_json, mark_toc])
+@task(pre=[lint, mark_toc])
 def checks(context):
     """Run all checks"""
     pass
