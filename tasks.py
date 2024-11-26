@@ -59,21 +59,19 @@ def format_python(context, fix=True):
 
 
 @task(iterable=["patterns"])
-def find_files_and_run(context, command, patterns, caseless=False, cd=None):
+def find_files_and_run(context, command, patterns, cd=None):
     """Run a command on each file found matching one or more patterns"""
-    filename_op = "-iname" if caseless else "-name"
-    filename_ops = [f"{filename_op} '{x}'" for x in patterns]
-    filename_op_stanza = r"\( {} \)".format(" -o ".join(filename_ops))
-    find_command = rf"""
-find . \( -type d \( -name .git -o -name .ruff_cache -o -name .venv \) -prune \) \
--o \( -type f {filename_op_stanza} -print0 \) \
-| xargs -0 -I '{{}}' -t {command}
-""".rstrip("\n")
+    full_patterns = [x.replace("'", r"'\''") for x in patterns]
+    full_patterns = " ".join([f"'{x}'" for x in full_patterns])
+    full_command = rf"""
+git ls-files -z --cached --others --exclude-standard {full_patterns} |
+xargs -0 -I '{{}}' -t {command}
+""".strip("\n")
     if cd is not None:
         with context.cd(cd):
-            context.run(find_command)
+            context.run("\n" + full_command)
     else:
-        context.run(find_command)
+        context.run(full_command)
 
 
 @task(pre=[install_json_indent])
