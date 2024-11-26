@@ -21,7 +21,7 @@ def install_json_indent(context):
 @task
 def install_mark_toc(context):
     """Install mark-toc tool with uv"""
-    context.run("uv tool install mark-toc")
+    context.run("uv tool install 'mark-toc>=0.5.0'")
 
 
 @task
@@ -87,7 +87,9 @@ def format_json(context):
 @task(pre=[install_mark_toc])
 def mark_toc(context):
     """Generate tables of contents for Markdown documents"""
-    command = "uvx mark-toc --heading-level 2 --skip-level 1 --pre-commit '{}'"
+    command = (
+        "uvx mark-toc --heading-level 2 --skip-level 1 --max-level 3 --pre-commit '{}'"
+    )
     patterns = ["*.md"]
     find_files_and_run(context, command, patterns, cd=git_repo_root(context))
 

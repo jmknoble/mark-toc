@@ -28,10 +28,10 @@ repos:
         args: ['--newlines=linux']
 
   - repo: https://github.com/jmknoble/mark-toc
-    rev: v0.4.2
+    rev: v0.5.0
     hooks:
       - id: mark-toc
-        args: ['--heading-level', '2', '--skip-level', '1']
+        args: ['--heading-level', '2', '--skip-level', '1', '--max-level', '3']
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version
