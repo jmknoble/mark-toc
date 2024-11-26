@@ -64,6 +64,33 @@ def no_echo(decorated_task):
     return wrapper_func
 
 
+def hide(decorated_task, what=True):
+    """Decorator to prevent a task from showing any output"""
+
+    if what not in {"out", "err", "both", True, None, False}:
+        raise ValueError(f"@hide: what={what}: invalid value")
+
+    @wraps(decorated_task)
+    def wrapper_func(context, *args, **kwargs):
+        saved_hide_value = context.config["run"]["hide"]
+        context.config["run"]["hide"] = what
+        return_value = decorated_task(context, *args, **kwargs)
+        context.config["run"]["hide"] = saved_hide_value
+        return return_value
+
+    return wrapper_func
+
+
+def hide_stdout(decorated_task):
+    """Decorator to hide only a task's stdout"""
+    return hide(decorated_task, what="out")
+
+
+def hide_stderr(decorated_task):
+    """Decorator to hide only a task's stderr"""
+    return hide(decorated_task, what="err")
+
+
 def progress(message, quiet=False, use_color=True):
     if quiet:
         return
@@ -103,6 +130,7 @@ def install_yamllint(context):
 
 
 @task
+@hide
 @config
 def git_repo_root(context, default=None):
     """Get the root of the current Git repo"""
