@@ -34,14 +34,14 @@ distributions, you'll probably need to change the `exclude` (and possibly `inclu
 ## Linting tests with ruff
 
 Depending on the test framework and the requirements of the tests, the lint rules for tests may need
-to differ from the rules for the main code base.  These rules can be configured in a [ruff.toml][]
+to differ from the rules for the main code base.  These rules can be configured in a [.ruff.toml][]
 file at the top of the directory tree they apply to.
 
 See [Ruff's configuration documentation][ruff-doc-config] for more info.
 
 
  [pyproject.toml]: ../pyproject.toml
- [ruff.toml]: ruff.toml
+ [.ruff.toml]: .ruff.toml
 
  [pytest]: pytest.org
  [ruff-doc-config]: https://docs.astral.sh/ruff/configuration/

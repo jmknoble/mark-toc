@@ -1,0 +1,25 @@
+[bumpver]
+current_version = "v0.5.0"
+version_pattern = "vMAJOR.MINOR.PATCH[PYTAGNUM]"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ".bumpver-pre-commit-hook.sh"
+post_commit_hook = ""
+commit = true
+tag = true
+push = true
+
+[bumpver.file_patterns]
+"bumpver.toml" = [
+    '^current_version = "{version}"',
+]
+"pyproject.toml" = [
+    '^version = "{pep440_version}"',
+]
+"src/mark_toc/__init__.py" = [
+    '^__version__ = "{pep440_version}"',
+]
+"README.md" = [
+    "rev: {version}",
+]

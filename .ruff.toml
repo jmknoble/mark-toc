@@ -1,0 +1,42 @@
+line-length = 88
+
+[lint]
+select = [
+    "E4",  # pycodestyle: imports
+    "E7",  # pycodestyle: syntax
+    "E9",  # pycodestyle: errors
+    "F",  # pyflakes
+    "W",  # warnings
+    "N",  # pep8-naming
+    "I",  # isort
+    "S",  # flake8-bandit
+    "B",  # flake8-bugbear
+    "A",  # flake8-builtins
+    "YTT",  # flake8-2020
+    "PL",  # pylint
+    # "D",  # pydocstyle
+    # "UP",  # pyupgrade
+]
+ignore = [
+    "B904",  # raise-without-from-inside-except
+    "B905",  # zip-without-explicit-strict
+    "E266",  # multiple-leading-hashes-for-block-comment
+    "N811",  # constant-imported-as-non-constant
+    "N812",  # lowercase-imported-as-non-lowercase
+    "N813",  # camelcase-imported-as-lowercase
+    "N814",  # camelcase-imported-as-constant
+]
+
+[lint.isort]
+case-sensitive = true
+
+[lint.pylint]
+max-args = 10
+max-branches = 15
+max-statements = 60
+# max-bool-expr = 5
+# max-locals = 15
+# max-nested-blocks = 5
+# max-positional-args = 5
+# max-public-methods = 20
+# max-returns = 6

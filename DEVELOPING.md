@@ -165,6 +165,8 @@ Ruff's linter (`ruff check`) can auto-apply "safe" fixes, if you ask it to:
 
     uv run invoke python.lint --fix
 
+See the [ruff configuration][ruff-config] for more details about enabled fixes.
+
 - - -
 
 ### Lint YAML files
@@ -252,7 +254,7 @@ For more info, see [tests/README.md][].
 
 We use [bumpver][bumpver-src] to maintain version numbers.
 
-The `[tool.bumpver]` configuration in [pyproject.toml][] is set up to:
+The [bumpver configuration][bumpver-config] is set up to:
 
 - Use semantic versions, with a leading `v` (`v1.2.3`, for example)
 - Commit, tag, and push the version change automatically
@@ -308,11 +310,11 @@ More info:
 
 ## References
 
-- **bumpver**       ( [GitHub][bumpver-src] | [PyPI][bumpver-pypi] | [PEP 440][pep-440] )
+- **bumpver**       ( [GitHub][bumpver-src] | [PyPI][bumpver-pypi] | [PEP 440][pep-440] | [Config][bumpver-config] )
 - **editorconfig**  ( [Home][editorconfig] | [Config][editorconfig-config] )
 - **invoke**        ( [Home][invoke] | [GitHub][invoke-src] | [Documentation][invoke-doc] | [Config][invoke-config] | [Tasks][invoke-tasks] )
 - **pre-commit**    ( [Home][pre-commit] | [GitHub][pre-commit-src] | [Config][pre-commit-config] )
-- **ruff**          ( [GitHub][ruff-src] | [Documentation][ruff-doc] )
+- **ruff**          ( [GitHub][ruff-src] | [Documentation][ruff-doc] | [Config][ruff-config] )
 - **uv**            ( [Install][uv-install] | [GitHub][uv-src] | [Documentation][uv-doc] )
 - **yamllint**      ( [GitHub][yamllint-src] | [Documentation][yamllint-doc] | [Config][yamllint-config] )
 
@@ -326,6 +328,7 @@ More info:
 
  [bumpver-src]: https://github.com/mbarkhau/bumpver
  [bumpver-pypi]: https://pypi.org/project/bumpver/
+ [bumpver-config]: bumpver.toml
 
  [editorconfig]: https://editorconfig.org/
  [editorconfig-config]: .editorconfig
@@ -342,6 +345,7 @@ More info:
 
  [ruff-src]: https://github.com/astral-sh/ruff
  [ruff-doc]: https://docs.astral.sh/ruff
+ [ruff-config]: .ruff.toml
 
  [uv-install]: https://docs.astral.sh/uv/getting-started/installation
  [uv-src]: https://github.com/astral-sh/uv

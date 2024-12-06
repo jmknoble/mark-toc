@@ -1,5 +1,11 @@
+extend = "../.ruff.toml"
+
 [lint]
-extend-select = [
+select = [
+    "E4",  # pycodestyle: imports
+    "E7",  # pycodestyle: syntax
+    "E9",  # pycodestyle: errors
+    "F",  # pyflakes
     "W",  # warnings
     # "N",  # pep8-naming
     "I",  # isort
@@ -11,6 +17,7 @@ extend-select = [
     # "D",  # pydocstyle
     # "UP",  # pyupgrade
 ]
+
 ignore = [
     "E266",  # multiple-leading-hashes-for-block-comment
 ]
