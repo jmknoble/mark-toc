@@ -113,16 +113,6 @@ def set_taskconfig(decorated_task, config_dict=None, restore=True):
     return wrapper_func
 
 
-# Workaround for https://github.com/adrienverge/yamllint/issues/700
-def extend_config(decorated_task):
-    """Decorator: Inject specific 'default' config into wrapped task's context"""
-    return set_taskconfig(
-        decorated_task,
-        config_dict={"run": {"echo_format": colorize("+ {command}", fg="blue")}},
-        restore=False,
-    )
-
-
 def echo_off(decorated_task):
     """Decorator: Prevent task's commands from echoing"""
     return set_taskconfig(decorated_task, config_dict={"run": {"echo": False}})
