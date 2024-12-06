@@ -1,146 +1,11 @@
 # https://www.pyinvoke.org/
 
-from copy import deepcopy
-from functools import wraps
+from invoke import Collection, call, task
 
-from invoke import call, task
+from taskutil import echo_off, echo_on, extend_config, progress
 
-########################################
+############################################################
 # Utility functions
-
-ATTRIBUTE_NAMES = ["normal", "bold"]
-COLOR_NAMES = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
-ATTRIBUTES = {x: i for (i, x) in enumerate(ATTRIBUTE_NAMES)}
-FOREGROUNDS = {x: i + 30 for (i, x) in enumerate(COLOR_NAMES)}
-BACKGROUNDS = {x: i + 40 for (i, x) in enumerate(COLOR_NAMES)}
-
-
-def color_code(name, lookup):
-    return "" if not name else str(lookup[name])
-
-
-def color_codes(attr, fg, bg):
-    codes = []
-    for code in [
-        color_code(attr, ATTRIBUTES),
-        color_code(fg, FOREGROUNDS),
-        color_code(bg, BACKGROUNDS),
-    ]:
-        if code:
-            codes.append(code)
-    return ";".join(codes)
-
-
-def color_escape_sequence(attr, fg, bg):
-    return "".join(["\033[", color_codes(attr, fg, bg), "m"])
-
-
-def colorize(text, attr=None, fg=None, bg=None):
-    if not any([attr, fg, bg]):
-        return text
-    prefix = color_escape_sequence(attr, fg, bg)
-    suffix = color_escape_sequence("normal", None, None)
-    return "".join([prefix, text, suffix])
-
-
-def print_progress(message, quiet=False, use_color=True):
-    if quiet:
-        return
-    message = " ".join(["==>", message, "..."])
-    if use_color:
-        print(colorize(message, attr="bold", fg="green"))
-    else:
-        print(message)
-
-
-def progress(func_or_message, replace=False, replacements=None):
-    if isinstance(func_or_message, str):
-        message = func_or_message
-    else:
-        try:
-            message = func_or_message.__doc__
-        except AttributeError:
-            message = func_or_message
-    if replace and replacements:
-        message = message.replace(*replacements)
-    print_progress(message)
-
-
-def sparse_update_dict(target, subdict, copy=True):
-    for key1 in subdict:
-        if isinstance(subdict[key1], dict):
-            sparse_update_dict(target[key1], subdict[key1])  # recursive
-        elif copy:
-            try:
-                target[key1] = subdict[key1].copy()
-            except AttributeError:
-                target[key1] = subdict[key1]
-        else:
-            target[key1] = subdict[key1]
-
-
-########################################
-# Decorators
-
-
-def taskconfig(decorated_task, config_dict=None, restore=True):
-    """Decorator to inject config into task context"""
-
-    @wraps(decorated_task)
-    def wrapper_func(context, *args, **kwargs):
-        if config_dict:
-            if restore:
-                saved_config = context.config
-                new_config = deepcopy(context.config)
-                context.config = new_config
-            sparse_update_dict(context.config, config_dict)
-        return_value = decorated_task(context, *args, **kwargs)
-        if config_dict and restore:
-            context.config = saved_config
-        return return_value
-
-    return wrapper_func
-
-
-# Workaround for https://github.com/adrienverge/yamllint/issues/700
-def config(decorated_task):
-    """Decorator to inject config into task context"""
-    return taskconfig(
-        decorated_task,
-        config_dict={"run": {"echo_format": colorize("+ {command}", fg="blue")}},
-        restore=False,
-    )
-
-
-def no_echo(decorated_task):
-    """Decorator to prevent task's commands from echoing"""
-    return taskconfig(decorated_task, config_dict={"run": {"echo": False}})
-
-
-def always_echo(decorated_task):
-    """Decorator to prevent task's commands from echoing"""
-    return taskconfig(decorated_task, config_dict={"run": {"echo": True}})
-
-
-def hide(decorated_task, what=True):
-    """Decorator to prevent a task from showing any output"""
-    if what not in {"out", "stdout", "err", "stderr", "both", True, None, False}:
-        raise ValueError(f"@hide: what={what}: invalid value")
-    return taskconfig(decorated_task, config_dict={"run": {"hide": what}})
-
-
-def hide_stdout(decorated_task):
-    """Decorator to hide only a task's stdout"""
-    return hide(decorated_task, what="stdout")
-
-
-def hide_stderr(decorated_task):
-    """Decorator to hide only a task's stderr"""
-    return hide(decorated_task, what="stderr")
-
-
-########################################
-# Tasks
 
 
 def install_tool(context, tool, constraint=None):
@@ -150,29 +15,6 @@ def install_tool(context, tool, constraint=None):
     context.run(f"uv tool install '{tool}{constraint}'")
 
 
-@task
-@config
-def install_json_indent(context):
-    """Install json-indent tool with uv"""
-    install_tool(context, "json-indent")
-
-
-@task
-@config
-def install_mark_toc(context):
-    """Install mark-toc tool with uv"""
-    install_tool(context, "mark-toc", constraint=">=0.5.0")
-
-
-@task
-@config
-def install_yamllint(context):
-    """Install yamllint tool with uv"""
-    install_tool(context, "yamllint")
-
-
-@task
-@config
 def git_repo_root(context, default=None, quiet=False):
     """Get the root of the current Git repo"""
     git_command = ["git rev-parse --show-toplevel"]
@@ -184,49 +26,7 @@ def git_repo_root(context, default=None, quiet=False):
     return repo_dir
 
 
-@task(pre=[install_yamllint])
-@config
-def yamllint(context):
-    """Lint YAML files using yamllint"""
-    progress(yamllint)
-    with context.cd(git_repo_root(context, quiet=True)):
-        context.run("uv tool run yamllint .")
-
-
-@task
-@config
-def isort_python(context, fix=True):
-    """Sort imports in Python source files using ruff"""
-    fix_flag = "--fix" if fix else ""
-    progress(isort_python, replace=not fix, replacements=("Sort ", "Check sorted ", 1))
-    context.run(f"uv run ruff check --config 'lint.select = [\"I\"]' {fix_flag}")
-
-
-@task
-@config
-def check_python(context, fix=False):
-    """Lint Python source files using ruff"""
-    fix_flag = "--fix" if fix else ""
-    progress(check_python)
-    context.run(f"uv run ruff check {fix_flag}")
-
-
-@task
-@config
-def format_python(context, fix=True):
-    """Format Python source files using ruff"""
-    diff_flag = "" if fix else "--diff"
-    progress(
-        format_python,
-        replace=not fix,
-        replacements=("Format ", "Check formatting in ", 1),
-    )
-    context.run(f"uv run ruff format {diff_flag}")
-
-
-@task(iterable=["patterns"])
-@config
-@no_echo
+@echo_off
 def find_files_and_run(context, command, patterns, cd=None):
     """Run a command on each file found matching one or more patterns"""
     full_patterns = [x.replace("'", r"'\''") for x in patterns]
@@ -242,20 +42,76 @@ xargs -0 -I '{{}}' -t {command}
         context.run(full_command)
 
 
+############################################################
+# Tasks
+
+
+@task
+@extend_config
+def install_json_indent(context):
+    """Install json-indent tool with uv"""
+    install_tool(context, "json-indent")
+
+
+@task
+@extend_config
+def install_mark_toc(context):
+    """Install mark-toc tool with uv"""
+    install_tool(context, "mark-toc", constraint=">=0.5.0")
+
+
+@task
+@extend_config
+def install_yamllint(context):
+    """Install yamllint tool with uv"""
+    install_tool(context, "yamllint")
+
+
+@task
+@extend_config
+def python_isort(context, fix=True):
+    """Sort imports in Python source files using ruff"""
+    fix_flag = "--fix" if fix else ""
+    progress(python_isort, replace=not fix, replacements=("Sort ", "Check sorted ", 1))
+    context.run(f"uv run ruff check --config 'lint.select = [\"I\"]' {fix_flag}")
+
+
+@task
+@extend_config
+def python_lint(context, fix=False):
+    """Lint Python source files using ruff"""
+    fix_flag = "--fix" if fix else ""
+    progress(python_lint)
+    context.run(f"uv run ruff check {fix_flag}")
+
+
+@task
+@extend_config
+def python_format(context, fix=True):
+    """Format Python source files using ruff"""
+    diff_flag = "" if fix else "--diff"
+    progress(
+        python_format,
+        replace=not fix,
+        replacements=("Format ", "Check formatting in ", 1),
+    )
+    context.run(f"uv run ruff format {diff_flag}")
+
+
 @task(pre=[install_json_indent])
-@config
-def format_json(context):
+@extend_config
+def json_indent(context):
     """Parse and format JSON files using json-indent"""
     command = "uvx json-indent --newlines=linux --pre-commit --diff '{}'"
     patterns = ["*.json"]
-    progress(format_json)
+    progress(json_indent)
     find_files_and_run(
         context, command, patterns, cd=git_repo_root(context, quiet=True)
     )
 
 
 @task(pre=[install_mark_toc])
-@config
+@extend_config
 def mark_toc(context):
     """Generate tables-of-contents for Markdown documents using mark-toc"""
     command = (
@@ -268,30 +124,39 @@ def mark_toc(context):
     )
 
 
+@task(pre=[install_yamllint])
+@extend_config
+def yamllint(context):
+    """Lint YAML files using yamllint"""
+    progress(yamllint)
+    with context.cd(git_repo_root(context, quiet=True)):
+        context.run("uv tool run yamllint .")
+
+
 @task(
     pre=[
         yamllint,
-        format_json,
-        call(isort_python, fix=False),
-        check_python,
-        call(format_python, fix=False),
+        json_indent,
+        call(python_isort, fix=False),
+        python_lint,
+        call(python_format, fix=False),
     ]
 )
-@config
+@extend_config
 def lint(context):
     """Run all lint checks"""
     pass
 
 
 @task(pre=[lint, mark_toc])
-@config
+@extend_config
 def checks(context):
     """Run all checks"""
     pass
 
 
 @task
-@config
+@extend_config
 def clean_docs(context):
     """Clean up documentation detritus"""
     progress(clean_docs)
@@ -299,7 +164,7 @@ def clean_docs(context):
 
 
 @task(pre=[clean_docs])
-@config
+@extend_config
 def clean(context):
     """Clean up build and runtime detritus"""
     progress(clean)
@@ -310,7 +175,7 @@ def clean(context):
 
 
 @task
-@config
+@extend_config
 def build(context, clean=False):
     """Build Python source and wheel distributions"""
     progress(build)
@@ -318,7 +183,7 @@ def build(context, clean=False):
 
 
 @task(iterable=["test_name_pattern"])
-@config
+@extend_config
 def tests(
     context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False
 ):
@@ -341,8 +206,8 @@ def tests(
 
 
 @task
-@config
-@always_echo
+@extend_config
+@echo_on
 def version(
     context,
     bump=False,
@@ -396,3 +261,32 @@ def version(
         description = "Bump version"
     progress(description)
     context.run("uv run bumpver {}".format(" ".join(args)))
+
+
+############################################################
+# Namespaces and visible tasks
+
+# Non-Python checks/lint tasks
+check_ns = Collection("check")
+check_ns.add_task(json_indent)
+check_ns.add_task(mark_toc)
+check_ns.add_task(yamllint)
+
+# Python tasks
+python_ns = Collection("python")
+python_ns.add_task(python_isort, name="isort")
+python_ns.add_task(python_lint, name="lint")
+python_ns.add_task(python_format, name="format")
+
+# Top-level tasks
+ns = Collection()  # MAGIC! Must be named `namespace` or `ns`
+ns.add_collection(check_ns)
+ns.add_collection(python_ns)
+
+ns.add_task(lint)
+ns.add_task(checks)
+ns.add_task(clean_docs)
+ns.add_task(clean)
+ns.add_task(build)
+ns.add_task(tests)
+ns.add_task(version)

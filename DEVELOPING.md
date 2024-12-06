@@ -107,20 +107,30 @@ Invoke refers to these commands as "tasks"; they are stored in [tasks.py][invoke
 
 Important tasks (discussed in sections below):
 
-| Task          | Description                                        | Has pre-commit hook? |
-|---------------|----------------------------------------------------|----------------------|
-| yamllint      | Run yamllint                                       | Yes                  |
-| format-json   | Run `json-indent` - parse and format JSON files    | Yes                  |
-| isort-python  | Run `ruff check` with isort rules - sort imports   | Yes                  |
-| check-python  | Run `ruff check` - lint Python source files        | Yes                  |
-| format-python | Run `ruff format` - format Python source files     | Yes                  |
-| lint          | Run all above lint checks                          |                      |
-| mark-toc      | Generate tables of contents for Markdown documents | Yes                  |
-| checks        | Run all the above - roughly the same as pre-commit |                      |
-| clean         | Clean up build and runtime detritus                |                      |
-| build         | Build Python source and wheel distributions        |                      |
-| tests         | Run tests using `python3 -m unittest discover`     |                      |
-| version       | Show or update this project's current version      |                      |
+| Task          | Description                                            |
+|---------------|--------------------------------------------------------|
+| lint          | Run all lint checks (see below)                        |
+| checks        | Run all checks -- roughly the same as pre-commit       |
+| clean         | Clean up build and runtime detritus                    |
+| build         | Build Python source and wheel distributions            |
+| tests         | Run tests using `python3 -m unittest discover`         |
+| version       | Show or update ("bump") this project's current version |
+
+Lint checks:
+
+| Task              | Description                                       | Has pre-commit hook? |
+|-------------------|---------------------------------------------------|----------------------|
+| check.json-indent | Run `json-indent` -- parse and format JSON files  | Yes                  |
+| check.yamllint    | Run `yamllint` -- check YAML for style and format | Yes                  |
+| python.isort      | Run `ruff check` with isort rules -- sort imports | Yes                  |
+| python.lint       | Run `ruff check` -- lint Python source files      | Yes                  |
+| python.format     | Run `ruff format` -- format Python source files   | Yes                  |
+
+Additional checks:
+
+| Task           | Description                                        | Has pre-commit hook? |
+|----------------|----------------------------------------------------|----------------------|
+| check.mark-toc | Generate tables of contents for Markdown documents | Yes                  |
 
 To see all available tasks:
 
@@ -147,13 +157,13 @@ See [Invoke's documentation][invoke-doc] for further info.
 We use [ruff][ruff-doc] to do both linting and auto-formatting of Python source code.
 There are pre-commit-hooks to do that, or you can run `invoke` tasks whenever you want:
 
-    uv run invoke isort-python
-    uv run invoke check-python
-    uv run invoke format-python
+    uv run invoke python.isort
+    uv run invoke python.lint
+    uv run invoke python.format
 
 Ruff's linter (`ruff check`) can auto-apply "safe" fixes, if you ask it to:
 
-    uv run invoke check-python --fix
+    uv run invoke python.lint --fix
 
 - - -
 
@@ -165,7 +175,7 @@ We use [yamllint][yamllint-src] to lint YAML files and enforce style.  Rules are
 `yamllint` is automatically run on YAML files as part of the pre-commit hooks.  If you want to run
 it manually, you can do so with an `invoke` task:
 
-    uv run invoke yamllint
+    uv run invoke check.yamllint
 
 This automatically installs the `yamllint` tool using `uv` if it's not already present.
 
@@ -184,7 +194,7 @@ To combine all the above linting checks:
 There are pre-commit hooks that run `mark-toc` to maintain tables of contents in Markdown documents.
 You can do that manually using an `invoke` task:
 
-    uv run invoke mark-toc
+    uv run invoke check.mark-toc
 
 This automatically installs the `mark-toc` tool using `uv` if it's not already present.
 
