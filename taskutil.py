@@ -138,3 +138,113 @@ def hide_stdout(decorated_task):
 def hide_stderr(decorated_task):
     """Decorator: Hide only a task's stderr"""
     return hide(decorated_task, what="stderr")
+
+
+############################################################
+# Convenience function: uv_tool_install
+
+
+def quote(text):
+    """Wrap a string in single quotes, with sh-style escaping of embedded quotes"""
+    if "'" in text:
+        text = text.replace("'", r"'\''")
+    return f"'{text}'"
+
+
+def uv_tool_install(  # noqa: PLR0913 too-many-arguments
+    context,
+    tool,
+    *,
+    variants=None,
+    constraint=None,
+    with_extra=None,
+    force=False,
+    index=None,
+    upgrade=False,
+    prerelease_strategy=None,
+    reinstall=False,
+    use_cache=True,
+    refresh=False,
+    python_version=None,
+    quiet=False,
+    progress_indicators=True,
+    echo=None,
+    hide=None,
+):
+    """Install a Python tool using `uv tool install`"""
+    command = ["uv", "tool", "install"]
+    if with_extra:
+        command.extend(["--with", quote(with_extra)])
+    if force:
+        command.append("--force")
+    if index:
+        command.extend(["--index", quote(index)])
+    if upgrade:
+        command.append("--upgrade")
+    if prerelease_strategy:
+        command.extend(["--prerelease", quote(prerelease_strategy)])
+    if reinstall:
+        command.append("--reinstall")
+    if not use_cache:
+        command.append("--no-cache")
+    if refresh:
+        command.append("--refresh")
+    if python_version:
+        command.extend(["--python", quote(python_version)])
+    if quiet:
+        command.append("--quiet")
+    if not progress_indicators:
+        command.append("--no-progress")
+
+    requirements = [tool]
+    if variants:
+        requirements.extend(["[", ",".join(variants), "]"])
+    if constraint:
+        requirements.append(constraint)
+    command.append(quote("".join(requirements)))
+
+    kwargs = {}
+    if echo is not None:
+        kwargs["echo"] = echo
+    if hide is not None:
+        kwargs["hide"] = hide
+
+    progress(f"Install {tool}")
+    context.run(" ".join(command), **kwargs)
+
+
+############################################################
+# More convenience functions
+
+
+def git_repo_root(context, default=None, quiet=True):
+    """Get the path to the top of the current Git repo"""
+    git_command = ["git rev-parse --show-toplevel"]
+    if default is not None:
+        git_command.extend([f"|| echo '{default}'"])
+    repo_dir = context.run(" ".join(git_command), hide=quiet).stdout.rsplit(
+        "\n", maxsplit=1
+    )[0]
+    return repo_dir
+
+
+def find_files_and_run(context, command, patterns, cd=None, echo=False, hide=None):
+    """Run a command on each file found matching one or more patterns, using `xargs -I`"""
+    full_patterns = [x.replace("'", r"'\''") for x in patterns]
+    full_patterns = " ".join([f"'{x}'" for x in full_patterns])
+    full_command = rf"""
+git ls-files -z --cached --others --exclude-standard {full_patterns} |
+xargs -0 -I '{{}}' -t {command}
+""".strip("\n")
+
+    kwargs = {}
+    if echo is not None:
+        kwargs["echo"] = echo
+    if hide is not None:
+        kwargs["hide"] = hide
+
+    if cd is not None:
+        with context.cd(cd):
+            context.run("\n" + full_command, **kwargs)
+    else:
+        context.run(full_command, **kwargs)
