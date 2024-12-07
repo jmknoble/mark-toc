@@ -22,20 +22,13 @@ HEADING_REGEX_TEMPLATE = r"^(?P<{level}>#+) *(?P<{text}>.*[^ #])( *#+)?$"
 CODE_FENCE_REGEX_TEMPLATE = r"^(?P<{fence}>```+)"
 TOC_ENTRY_REGEX_TEMPLATE = r"^ *[-*+] *[^ ]"
 BLANK_LINE_REGEX_TEMPLATE = r"^$"
-COMMENT_REGEX_TEMPLATE = (
-    r"^\[(?P<{label}>[^\]]*)\]: "
-    r"#(?P<{ref}>[-0-9A-Za-z]*)?( +\((?P<comment>[^\)]*)\))? *$"
-)
+COMMENT_REGEX_TEMPLATE = r"^\[(?P<{label}>[^\]]*)\]: #(?P<{ref}>[-0-9A-Za-z]*)?( +\((?P<comment>[^\)]*)\))? *$"
 
-HEADING_REGEX_PATTERN = HEADING_REGEX_TEMPLATE.format(
-    level=RE_GROUP_LEVEL, text=RE_GROUP_TEXT
-)
+HEADING_REGEX_PATTERN = HEADING_REGEX_TEMPLATE.format(level=RE_GROUP_LEVEL, text=RE_GROUP_TEXT)
 CODE_FENCE_REGEX_PATTERN = CODE_FENCE_REGEX_TEMPLATE.format(fence=RE_GROUP_FENCE)
 TOC_ENTRY_REGEX_PATTERN = TOC_ENTRY_REGEX_TEMPLATE
 BLANK_LINE_REGEX_PATTERN = BLANK_LINE_REGEX_TEMPLATE
-COMMENT_REGEX_PATTERN = COMMENT_REGEX_TEMPLATE.format(
-    label=RE_GROUP_LABEL, ref=RE_GROUP_REF, comment=RE_GROUP_COMMENT
-)
+COMMENT_REGEX_PATTERN = COMMENT_REGEX_TEMPLATE.format(label=RE_GROUP_LABEL, ref=RE_GROUP_REF, comment=RE_GROUP_COMMENT)
 
 HEADING_REGEX = re.compile(HEADING_REGEX_PATTERN)
 CODE_FENCE_REGEX = re.compile(CODE_FENCE_REGEX_PATTERN)
@@ -136,9 +129,7 @@ class TocLevel(object):
     def __repr__(self):
         """Print a human-readable representation of this level."""
         items_text = pprint.pformat(self.items, indent=self.level + 1)
-        text = "TocLevel(level={level}, items={items})".format(
-            level=self.level, items=items_text
-        )
+        text = "TocLevel(level={level}, items={items})".format(level=self.level, items=items_text)
         return text
 
     def add_item(self, text, level):
@@ -152,9 +143,7 @@ class TocLevel(object):
             return self
 
         if level > self.level:
-            new_toc_level = TocLevel(
-                level=self.level + 1, max_level=self.max_level, parent=self
-            )
+            new_toc_level = TocLevel(level=self.level + 1, max_level=self.max_level, parent=self)
             self.items.append(new_toc_level)
             return new_toc_level.add_item(text, level)
 
@@ -174,9 +163,7 @@ class TocLevel(object):
                         toc_levels.append(toc_level)
         return toc_levels
 
-    def format(
-        self, numbered, alt_list_char, indent_width=INDENT_WIDTH, adjust_indent=0
-    ):
+    def format(self, numbered, alt_list_char, indent_width=INDENT_WIDTH, adjust_indent=0):
         """Format this level and all its items with the given options."""
         formatted_items = []
         for item in self.items:
@@ -372,9 +359,7 @@ class MarkdownFile(object):
         """Get a printable filename and line number."""
         if self.line_index is None:
             return self.filename
-        return "{filename}:{line_number}".format(
-            filename=self.filename, line_number=self.line_index + 1
-        )
+        return "{filename}:{line_number}".format(filename=self.filename, line_number=self.line_index + 1)
 
     def get_next_line(self, reset=False):
         """Get the "next" line from the set of lines."""
@@ -413,9 +398,7 @@ class MarkdownFile(object):
             elif _is_begin_toc_token(line):
                 if seen_toc:
                     raise ValueError(
-                        "invalid syntax: nested [{begintoc}]".format(
-                            begintoc=LABEL_BEGIN_TOC
-                        ),
+                        "invalid syntax: nested [{begintoc}]".format(begintoc=LABEL_BEGIN_TOC),
                         self.get_file_position(),
                     )
                 seen_toc = True
@@ -423,9 +406,7 @@ class MarkdownFile(object):
             elif _is_end_toc_token(line):
                 if not seen_toc:
                     raise ValueError(
-                        "invalid syntax: dangling [{endtoc}]".format(
-                            endtoc=LABEL_END_TOC
-                        ),
+                        "invalid syntax: dangling [{endtoc}]".format(endtoc=LABEL_END_TOC),
                         self.get_file_position(),
                     )
                 in_toc = False

@@ -73,9 +73,7 @@ def json_indent(context):
 @task(pre=[install_mark_toc])
 def mark_toc(context):
     """Generate tables-of-contents for Markdown documents using mark-toc"""
-    command = (
-        "uvx mark-toc --heading-level 2 --skip-level 1 --max-level 3 --pre-commit '{}'"
-    )
+    command = "uvx mark-toc --heading-level 2 --skip-level 1 --max-level 3 --pre-commit '{}'"
     patterns = ["*.md"]
     progress(mark_toc)
     find_files_and_run(context, command, patterns, cd=git_repo_root(context))
@@ -134,9 +132,7 @@ def build(context, clean=False):
 
 
 @task(iterable=["test_name_pattern"])
-def tests(
-    context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False
-):
+def tests(context, test_name_pattern, quiet=False, failfast=False, catch=False, buffer=False):
     """Run tests using `unittest discover`"""
     args = []
     args.append("-q" if quiet else "-v")
@@ -150,9 +146,7 @@ def tests(
         args.append("-k")
         args.extend(test_name_pattern)
     progress(tests)
-    context.run(
-        "uv run python3 -m unittest discover -s tests -t . {}".format(" ".join(args))
-    )
+    context.run("uv run python3 -m unittest discover -s tests -t . {}".format(" ".join(args)))
 
 
 @task
@@ -172,9 +166,7 @@ def version(
     command = ["uv", "run", "bumpver"]
     if not bump:
         if any([major, minor, patch, release_tag, release_num]):
-            raise RuntimeError(
-                "Looks like you meant to bump the version but forgot to use '--bump'"
-            )
+            raise RuntimeError("Looks like you meant to bump the version but forgot to use '--bump'")
         command.append("show")
     else:
         command.append("update")

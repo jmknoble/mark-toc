@@ -42,9 +42,7 @@ class IOFileOpenError(IOFileError):
     def __init__(self, path, mode, purpose):
         self.mode = mode
         self.purpose = purpose
-        message = "error opening for {purpose} (mode: {mode})".format(
-            mode=self.mode, purpose=purpose
-        )
+        message = "error opening for {purpose} (mode: {mode})".format(mode=self.mode, purpose=purpose)
         super(IOFileOpenError, self).__init__(path, message)
 
 
@@ -95,9 +93,7 @@ class IOFile(object):
             - `KeyError` if `property_name` is not a recognized property name
         """
         if purpose not in self._io_properties:
-            raise ValueError(
-                "{purpose}: unrecognized IOFile purpose".format(purpose=purpose)
-            )
+            raise ValueError("{purpose}: unrecognized IOFile purpose".format(purpose=purpose))
         return self._io_properties[purpose][property_name]
 
     def _raise_open_error(self, purpose):
@@ -130,9 +126,7 @@ class IOFile(object):
         if self.file is None:
             if self.path == "-":
                 self.file = self._get_io_property(purpose, "stdio_stream")
-                self.printable_name = self._get_io_property(
-                    purpose, "stdio_printable_name"
-                )
+                self.printable_name = self._get_io_property(purpose, "stdio_printable_name")
             else:
                 self.file = open(self.path, target_mode)
             self.mode = target_mode
@@ -200,16 +194,12 @@ class TextIOFile(IOFile):
             self._raise_open_error(purpose)
         if self.file is None:
             if self.path == "-":
-                self.printable_name = self._get_io_property(
-                    purpose, "stdio_printable_name"
-                )
+                self.printable_name = self._get_io_property(purpose, "stdio_printable_name")
                 fileish = self._get_io_property(purpose, "stdio_stream").fileno()
                 closefd = False
             else:
                 fileish = self.path
                 closefd = True
-            self.file = io.open(
-                fileish, mode=target_mode, newline=newline, closefd=closefd
-            )
+            self.file = io.open(fileish, mode=target_mode, newline=newline, closefd=closefd)
             self.mode = target_mode
         return self.file

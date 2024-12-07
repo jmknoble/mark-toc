@@ -57,9 +57,7 @@ def _infer_full_prog(prog, with_module=False, with_relative=True, with_home=Fals
     if base_prog == "__main__.py":
         if with_module:
             module = os.path.basename(os.path.dirname(prog))
-            full_prog = "{python} -m {module}".format(
-                python=_python_executable(), module=module
-            )
+            full_prog = "{python} -m {module}".format(python=_python_executable(), module=module)
         else:
             full_prog = os.path.join(_python_bin_dir(), _infer_base_prog(prog))
 
@@ -84,9 +82,7 @@ def _infer_full_prog(prog, with_module=False, with_relative=True, with_home=Fals
 
 
 def _full_prog_if_not_on_path(prog, **kwargs):
-    full_prog = _infer_full_prog(
-        prog, with_module=False, with_relative=True, with_home=False
-    )
+    full_prog = _infer_full_prog(prog, with_module=False, with_relative=True, with_home=False)
     base_prog = _infer_base_prog(prog)
     path_prog = shutil.which(base_prog)
     if path_prog is not None and path_prog == full_prog:
@@ -111,9 +107,7 @@ def get_instructions(prog, completion_args):
     """
     return INSTRUCTIONS.format(
         base_prog=_infer_base_prog(prog),
-        full_prog=_infer_full_prog(
-            prog, with_module=True, with_relative=False, with_home=True
-        ),
+        full_prog=_infer_full_prog(prog, with_module=True, with_relative=False, with_home=True),
         completion_command=" ".join(completion_args),
     )
 

@@ -222,9 +222,7 @@ def git_repo_root(context, default=None, quiet=True):
     git_command = ["git rev-parse --show-toplevel"]
     if default is not None:
         git_command.extend([f"|| echo '{default}'"])
-    repo_dir = context.run(" ".join(git_command), hide=quiet).stdout.rsplit(
-        "\n", maxsplit=1
-    )[0]
+    repo_dir = context.run(" ".join(git_command), hide=quiet).stdout.rsplit("\n", maxsplit=1)[0]
     return repo_dir
 
 

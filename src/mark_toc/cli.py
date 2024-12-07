@@ -64,9 +64,7 @@ DEFAULT_MAX_LEVEL = 0
 ####################
 
 
-def _generate_comment(
-    prog, argv, suffix="", with_full_command=False, with_datestamp=False
-):
+def _generate_comment(prog, argv, suffix="", with_full_command=False, with_datestamp=False):
     if with_full_command:
         command = "'" + " ".join(argv) + "'"
     else:
@@ -114,10 +112,7 @@ def _add_file_arguments(parser):
         dest="output_filename",
         default=None,
         metavar="OUTPUTFILE",
-        help=(
-            "output file, or '-' for stdout (default: stdout); "
-            "conflicts with '--inplace'"
-        ),
+        help="output file, or '-' for stdout (default: stdout); conflicts with '--inplace'",
     )
     parser.add_argument(
         "-I",
@@ -192,9 +187,7 @@ def _add_heading_arguments(parser):
         "--heading-text",
         action="store",
         default=DEFAULT_HEADING_TEXT,
-        help="Text of heading above table of contents (default: '{default}')".format(
-            default=DEFAULT_HEADING_TEXT
-        ),
+        help="Text of heading above table of contents (default: '{default}')".format(default=DEFAULT_HEADING_TEXT),
     )
     parser.add_argument(
         "-H",
@@ -202,9 +195,7 @@ def _add_heading_arguments(parser):
         action="store",
         type=int,
         default=DEFAULT_HEADING_LEVEL,
-        help="Level of heading above table of contents (default: {default})".format(
-            default=DEFAULT_HEADING_LEVEL
-        ),
+        help="Level of heading above table of contents (default: {default})".format(default=DEFAULT_HEADING_LEVEL),
     )
     parser.add_argument(
         "-S",
@@ -212,10 +203,9 @@ def _add_heading_arguments(parser):
         action="store",
         type=int,
         default=DEFAULT_SKIP_LEVEL,
-        help=(
-            "Number of heading levels to leave out of table contents "
-            "(default: {default})"
-        ).format(default=DEFAULT_SKIP_LEVEL),
+        help="Number of heading levels to leave out of table contents (default: {default})".format(
+            default=DEFAULT_SKIP_LEVEL
+        ),
     )
     parser.add_argument(
         "-X",
@@ -223,10 +213,9 @@ def _add_heading_arguments(parser):
         action="store",
         type=int,
         default=DEFAULT_MAX_LEVEL,
-        help=(
-            "Maximum number of heading levels to include in table contents "
-            "(default: {default})"
-        ).format(default=DEFAULT_MAX_LEVEL),
+        help="Maximum number of heading levels to include in table contents (default: {default})".format(
+            default=DEFAULT_MAX_LEVEL
+        ),
     )
 
 
@@ -237,10 +226,9 @@ def _add_option_arguments(parser):
         dest="add_trailing_heading_chars",
         action="store_true",
         default=DEFAULT_ADD_TRAILING_HEADING_CHARS,
-        help=(
-            "Add trailing '#' characters to the table of contents heading "
-            "(default: {default})"
-        ).format(default=DEFAULT_ADD_TRAILING_HEADING_CHARS),
+        help="Add trailing '#' characters to the table of contents heading (default: {default})".format(
+            default=DEFAULT_ADD_TRAILING_HEADING_CHARS
+        ),
     )
     parser.add_argument(
         "-l",
@@ -248,19 +236,14 @@ def _add_option_arguments(parser):
         "--alternate-list-character",
         action="store_true",
         default=DEFAULT_ALT_LIST_CHAR,
-        help=(
-            "Use alternate list character ('*') for table of contents entries "
-            "(default: use '-')"
-        ),
+        help="Use alternate list character ('*') for table of contents entries (default: use '-')",
     )
     parser.add_argument(
         "-n",
         "--numbered",
         action="store_true",
         default=DEFAULT_NUMBERED,
-        help=("Add numbering to table of contents entries (default: {default})").format(
-            default=DEFAULT_NUMBERED
-        ),
+        help="Add numbering to table of contents entries (default: {default})".format(default=DEFAULT_NUMBERED),
     )
 
 
@@ -271,10 +254,7 @@ def _add_comment_arguments(parser):
         "--comment",
         action="store",
         default=None,
-        help=(
-            "Comment to add to Markdown source near table of contents "
-            "(default: auto-generated)"
-        ),
+        help="Comment to add to Markdown source near table of contents (default: auto-generated)",
     )
     comment_arg_group.add_argument(
         "--no-comment",
@@ -312,10 +292,7 @@ def _setup_args(argv):
     (prog, argv) = argparsing.grok_argv(argv)
     parser = argparsing.setup_argparse(
         prog=prog,
-        description=(
-            "Add or update a table of contents in one or more "
-            "GitHub-flavored Markdown documents."
-        ),
+        description="Add or update a table of contents in one or more GitHub-flavored Markdown documents.",
     )
 
     _add_file_arguments(parser)
@@ -355,25 +332,18 @@ def _check_input_and_output_filenames(cli_args):
         if cli_args.output_filename is None:
             cli_args.output_filename = "-"  # default to stdout
         if len(cli_args.input_filenames) > 1:
-            raise RuntimeError(
-                "to process more than one input file at a time, use '--inplace'"
-            )
+            raise RuntimeError("to process more than one input file at a time, use '--inplace'")
         output_filename = _normalize_path(cli_args.output_filename)
         input_filename = _normalize_path(cli_args.input_filenames[0])
         if input_filename != "-" and input_filename == output_filename:
-            raise RuntimeError(
-                "input file and output file are the same; "
-                "use '--inplace' to modify files in place"
-            )
+            raise RuntimeError("input file and output file are the same; " "use '--inplace' to modify files in place")
     else:
         if cli_args.output_filename is not None:
             raise RuntimeError("output files do not make sense with '--inplace'")
 
         for i in range(len(cli_args.input_filenames)):
             if cli_args.input_filenames[i] == "-":
-                raise RuntimeError(
-                    "reading from stdin does not make sense with '--inplace'"
-                )
+                raise RuntimeError("reading from stdin does not make sense with '--inplace'")
 
 
 def _check_completion_args(cli_args):
@@ -446,9 +416,7 @@ def main(*argv):
         )
 
         input_iofile.open_for_input()
-        md = mdfile.MarkdownFile(
-            infile=input_iofile.file, infilename=input_iofile.printable_name
-        )
+        md = mdfile.MarkdownFile(infile=input_iofile.file, infilename=input_iofile.printable_name)
 
         try:
             input_text = md.read()
@@ -492,9 +460,7 @@ def main(*argv):
                         file=sys.stderr,
                     )
                     if args.show_diff:
-                        for line in _compute_diff(
-                            output_iofile.file.name, input_text, output_text
-                        ):
+                        for line in _compute_diff(output_iofile.file.name, input_text, output_text):
                             print(line)
                 output_iofile.close()
 
